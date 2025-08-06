@@ -1,6 +1,7 @@
 package com.emranhss.dreamjob.entity;
 
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 
 import java.sql.Date;
@@ -22,6 +23,7 @@ public class JobSeeker {
 
     @OneToOne
     @JoinColumn(name = "user_id", nullable = false)
+    @JsonManagedReference
     private User user;
 
 

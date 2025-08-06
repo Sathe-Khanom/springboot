@@ -3,17 +3,22 @@ package com.emranhss.dreamjob.restcontroller;
 
 import com.emranhss.dreamjob.entity.JobSeeker;
 import com.emranhss.dreamjob.entity.User;
-import com.emranhss.dreamjob.service.UserService;
+import com.emranhss.dreamjob.repository.IUserRepo;
+import com.emranhss.dreamjob.repository.JobSeekerRepository;
+import com.emranhss.dreamjob.service.AuthService;
+import com.emranhss.dreamjob.service.JobSeekerService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/jobseeker/")
@@ -21,7 +26,16 @@ import java.util.Map;
 public class JobSeekerRestController {
 
     @Autowired
-    private UserService userService;
+    private AuthService authService;
+
+    @Autowired
+    private JobSeekerRepository jobSeekerRepository;
+
+    @Autowired
+    private IUserRepo userRepo;
+
+    @Autowired
+    private JobSeekerService jobSeekerService;
 
     @PostMapping("")
     public ResponseEntity<Map<String, String>> registerJobSeeker(
@@ -34,7 +48,7 @@ public class JobSeekerRestController {
         JobSeeker jobSeeker = objectMapper.readValue(jobSeekerJson, JobSeeker.class);
 
         try {
-            userService.registerJobSeeker(user, file, jobSeeker);
+            authService.registerJobSeeker(user, file, jobSeeker);
             Map<String, String> response = new HashMap<>();
             response.put("Message", "User Added Successfully ");
 
@@ -42,10 +56,21 @@ public class JobSeekerRestController {
         } catch (Exception e) {
 
             Map<String, String> errorResponse = new HashMap<>();
-            errorResponse.put("Message", "User Add Faild " + e);
+            errorResponse.put("Message", "User Add Failed " + e);
             return new ResponseEntity<>(errorResponse, HttpStatus.INTERNAL_SERVER_ERROR);
         }
 
+
+    }
+
+    @GetMapping("profile")
+    public ResponseEntity<?> getProfile(Authentication authentication) {
+        System.out.println("Authenticated User: " + authentication.getName());
+        System.out.println("Authorities: " + authentication.getAuthorities());
+        String email = authentication.getName();
+        Optional<User> user =userRepo.findByEmail(email);
+        JobSeeker jobSeeker = jobSeekerService.getProfileByUserId(user.get().getId());
+        return ResponseEntity.ok(jobSeeker);
 
     }
 

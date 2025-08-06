@@ -1,6 +1,5 @@
 package com.emranhss.dreamjob.restcontroller;
 
-
 import com.emranhss.dreamjob.dto.AuthenticationResponse;
 import com.emranhss.dreamjob.entity.User;
 import com.emranhss.dreamjob.repository.ITokenRepository;
@@ -19,10 +18,8 @@ import java.util.List;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/api/user/")
-
-
-public class UserRestController {
+@RequestMapping("/auth/")
+public class AuthRestController {
 
     @Autowired
     private AuthService authService;
@@ -37,10 +34,10 @@ public class UserRestController {
             @RequestParam(value = "photo") MultipartFile file
     ) throws JsonProcessingException {
         ObjectMapper objectMapper = new ObjectMapper();
-      User user = objectMapper.readValue(userJson, User.class);
+        User user = objectMapper.readValue(userJson, User.class);
 
         try {
-           authService.saveOrUpdate(user, file);
+            authService.saveOrUpdate(user, file);
             Map<String, String> response = new HashMap<>();
             response.put("Message", "User Added Successfully ");
 
@@ -60,43 +57,43 @@ public class UserRestController {
     public ResponseEntity<List<User>> getAllUsers() {
         List<User> users = authService.findAll();
         return ResponseEntity.ok(users);
-    }
-
-        @PostMapping("login")
-        public ResponseEntity<AuthenticationResponse>  login(@RequestBody User request){
-            return ResponseEntity.ok(authService.authenticate(request));
-
-        }
-
-
-        @GetMapping("/active/{id}")
-        public ResponseEntity<String> activeUser(@PathVariable("id") int id){
-
-            String response= authService.activeUser(id);
-            return  ResponseEntity.ok(response);
-        }
-
-
-        @PostMapping("/logout")
-        public ResponseEntity<String> logout(HttpServletRequest request) {
-            final String authHeader = request.getHeader("Authorization");
-
-            if (authHeader == null || !authHeader.startsWith("Bearer ")) {
-                return ResponseEntity.badRequest().body("Missing or invalid Authorization header.");
-            }
-
-            String token = authHeader.substring(7);  // Strip "Bearer "
-
-            tokenRepository.findByToken(token).ifPresent(savedToken -> {
-                savedToken.setLogout(true);  // Mark token as logged out
-                tokenRepository.save(savedToken);
-            });
-
-            return ResponseEntity.ok("Logged out successfully.");
-        }
-
-
-
 
     }
 
+
+    @PostMapping("login")
+    public ResponseEntity<AuthenticationResponse>  login(@RequestBody User request){
+        return ResponseEntity.ok(authService.authenticate(request));
+
+    }
+
+
+    @GetMapping("/active/{id}")
+    public ResponseEntity<String> activeUser(@PathVariable("id") int id){
+
+        String response= authService.activeUser(id);
+        return  ResponseEntity.ok(response);
+    }
+
+
+    @PostMapping("/logout")
+    public ResponseEntity<String> logout(HttpServletRequest request) {
+        final String authHeader = request.getHeader("Authorization");
+
+        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+            return ResponseEntity.badRequest().body("Missing or invalid Authorization header.");
+        }
+
+        String token = authHeader.substring(7);  // Strip "Bearer "
+
+        tokenRepository.findByToken(token).ifPresent(savedToken -> {
+            savedToken.setLogout(true);  // Mark token as logged out
+            tokenRepository.save(savedToken);
+        });
+
+        return ResponseEntity.ok("Logged out successfully.");
+    }
+
+
+
+}

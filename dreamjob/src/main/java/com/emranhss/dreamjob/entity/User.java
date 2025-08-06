@@ -1,5 +1,6 @@
 package com.emranhss.dreamjob.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -29,6 +30,10 @@ public class User implements UserDetails {
     @OneToMany
     private List<Token> tokens;
 
+    @OneToOne(mappedBy = "user")
+    @JsonBackReference
+    private JobSeeker jobSeeker;
+
     // for user details +++++++++++++++++++++++++++++++++++++++++
 
     @Column(nullable = false)
@@ -39,6 +44,7 @@ public class User implements UserDetails {
     }
 
 
+
     public User(int id, String name, String email, String phone, String password, String photo, Role role) {
         this.id = id;
         this.name = name;
@@ -47,6 +53,14 @@ public class User implements UserDetails {
         this.password = password;
         this.photo = photo;
         this.role = role;
+    }
+
+    public JobSeeker getJobSeeker() {
+        return jobSeeker;
+    }
+
+    public void setJobSeeker(JobSeeker jobSeeker) {
+        this.jobSeeker = jobSeeker;
     }
 
     public int getId() {

@@ -26,6 +26,8 @@ import java.util.List;
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
+
+
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http,
                                            JwtAuthenticationFilter jwtAuthenticationFilter,
@@ -34,9 +36,10 @@ public class SecurityConfig {
         return http
                 .csrf(AbstractHttpConfigurer::disable)
                 .cors(Customizer.withDefaults())
-                .authorizeHttpRequests(req ->
-                        req.requestMatchers("/api/user/", "/images/**", "/api/jobseeker/**","/api/user/active/**", "/api/user/login").permitAll()
-                                .anyRequest().authenticated()
+                .authorizeHttpRequests(req -> req
+                        .requestMatchers("/api/user/login","/auth/login","/api/jobseeker/profile", "/api/jobseeker/**","/images/**", "/api/user/active/**").permitAll()
+                        .requestMatchers("/api/user/all").hasRole("JOBSEEKER")
+                        .anyRequest().authenticated()
                 )
                 .userDetailsService(userService)
                 .sessionManagement(session ->
@@ -45,6 +48,7 @@ public class SecurityConfig {
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
                 .build();
     }
+
     @Bean
     public JwtAuthenticationFilter jwtAuthenticationFilter(JwtService jwtService, UserService userService) {
         return new JwtAuthenticationFilter(jwtService, userService);
