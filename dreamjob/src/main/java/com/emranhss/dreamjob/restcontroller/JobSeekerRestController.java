@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
@@ -60,6 +61,13 @@ public class JobSeekerRestController {
             return new ResponseEntity<>(errorResponse, HttpStatus.INTERNAL_SERVER_ERROR);
         }
 
+
+    }
+
+    @GetMapping("all")
+    public ResponseEntity<List<JobSeeker>> getAllUsers() {
+        List<JobSeeker> jobSeekerList = jobSeekerService.getAll();
+        return ResponseEntity.ok(jobSeekerList);
 
     }
 

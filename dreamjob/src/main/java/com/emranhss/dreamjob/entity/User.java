@@ -30,9 +30,7 @@ public class User implements UserDetails {
     @OneToMany
     private List<Token> tokens;
 
-    @OneToOne(mappedBy = "user")
-    @JsonBackReference
-    private JobSeeker jobSeeker;
+
 
     // for user details +++++++++++++++++++++++++++++++++++++++++
 
@@ -55,13 +53,7 @@ public class User implements UserDetails {
         this.role = role;
     }
 
-    public JobSeeker getJobSeeker() {
-        return jobSeeker;
-    }
 
-    public void setJobSeeker(JobSeeker jobSeeker) {
-        this.jobSeeker = jobSeeker;
-    }
 
     public int getId() {
 
@@ -131,6 +123,8 @@ public class User implements UserDetails {
 
         this.role = role;
     }
+
+
     public List<Token> getTokens() {
         return tokens;
     }
@@ -183,7 +177,7 @@ public class User implements UserDetails {
 
     @Override
     public boolean isEnabled() {
-        return isEnabled();
+        return true;
     }
 
 

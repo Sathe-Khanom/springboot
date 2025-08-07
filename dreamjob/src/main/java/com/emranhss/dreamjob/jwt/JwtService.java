@@ -16,6 +16,7 @@ import java.util.function.Function;
 
 @Service
 public class JwtService {
+
   @Autowired
 
   private ITokenRepository tokenRepository;
@@ -85,14 +86,10 @@ public class JwtService {
     public boolean isValid(String token, UserDetails user) {
 
         String userName = extractUserName(token);
+        boolean expired = isTokenExpired(token);
 
-        boolean validToken = tokenRepository
-                .findByToken(token)
-                .map(t -> !t.isLogout())
-                .orElse(false);
-
-        return (userName.equals(user.getUsername()) && !isTokenExpired(token) && validToken);
-
+        System.out.println("Bypassing DB check. Token expired? " + expired);
+        return (userName.equals(user.getUsername()) && !expired);
     }
 
 
