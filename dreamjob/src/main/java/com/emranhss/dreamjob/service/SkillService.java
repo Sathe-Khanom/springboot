@@ -1,12 +1,19 @@
 package com.emranhss.dreamjob.service;
 
 
+import com.emranhss.dreamjob.dto.RefferenceDTO;
+import com.emranhss.dreamjob.dto.SkillDTO;
+import com.emranhss.dreamjob.entity.JobSeeker;
+import com.emranhss.dreamjob.entity.Refference;
 import com.emranhss.dreamjob.entity.Skill;
+import com.emranhss.dreamjob.repository.JobSeekerRepository;
 import com.emranhss.dreamjob.repository.SkillRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class SkillService {
@@ -14,11 +21,22 @@ public class SkillService {
     @Autowired
     private SkillRepository skillRepository;
 
-    public List<Skill> getByJobSeekerId(Long jobSeekerId) {
-        return skillRepository.findByJobSeekerId(jobSeekerId);
+    @Autowired
+    private JobSeekerRepository jobSeekerRepository;
+
+    public List<SkillDTO> getByJobSeekerId(Long jobSeekerId) {
+        List<Skill> skills = skillRepository.findByJobSeekerId(jobSeekerId);
+        return skills.stream()
+                .map(SkillDTO :: new)
+                .collect(Collectors.toList());
     }
 
-    public Skill save(Skill skill) {
+    public Skill saveSkill(Skill skill, String email) {
+        JobSeeker jobSeeker = jobSeekerRepository.findByUserEmail(email)
+                .orElseThrow(() -> new UsernameNotFoundException("JobSeeker not found"));
+
+        skill.setJobSeeker(jobSeeker);
+
         return skillRepository.save(skill);
     }
 

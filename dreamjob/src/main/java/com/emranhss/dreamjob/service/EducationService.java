@@ -1,5 +1,6 @@
 package com.emranhss.dreamjob.service;
 
+import com.emranhss.dreamjob.dto.EducationDTO;
 import com.emranhss.dreamjob.entity.Education;
 import com.emranhss.dreamjob.entity.JobSeeker;
 import com.emranhss.dreamjob.repository.EducationRepository;
@@ -20,10 +21,10 @@ public class EducationService {
     @Autowired
     private JobSeekerRepository jobSeekerRepository;
 
-    public List<Education> getByJobSeekerId(Long jobSeekerId) {
+    public List<EducationDTO> getByJobSeekerId(Long jobSeekerId) {
         List<Education> educations = educationRepository.findByJobSeekerId(jobSeekerId);
         return educations.stream()
-                .map(Education :: new)
+                .map(EducationDTO :: new)
                 .collect(Collectors.toList());
     }
 
