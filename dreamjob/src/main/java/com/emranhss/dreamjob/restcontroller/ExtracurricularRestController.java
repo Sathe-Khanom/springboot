@@ -13,6 +13,7 @@ import com.emranhss.dreamjob.service.JobSeekerService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -35,18 +36,26 @@ public class ExtracurricularRestController {
         return ResponseEntity.ok(savedExtracurricular);
     }
 
+
     @GetMapping("all")
-    public ResponseEntity<List<ExtracurricularDTO>> getExtracurricularByJobSeeker(Authentication authentication) {
+    public ResponseEntity<List<ExtracurricularDTO>> getEducationsByJobSeeker(Authentication authentication) {
         // Get logged-in user email
         String email = authentication.getName();
 
-        Optional<User> user =userRepo.findByEmail(email);
-        JobSeeker jobSeeker = jobSeekerService.getProfileByUserId(user.get().getId());
+        User user = userRepo.findByEmail(email)
+                .orElseThrow(() -> new UsernameNotFoundException("User not found with email: " + email));
+        JobSeeker jobSeeker = jobSeekerService.getProfileByUserId(user.getId());
 
 
-        List<ExtracurricularDTO> extracurricular = extracurricularService.getByJobSeekerId(jobSeeker.getId());
+        List<ExtracurricularDTO> extracurriculars = extracurricularService.getByJobSeekerId(jobSeeker.getId());
 
 
-        return ResponseEntity.ok(extracurricular);
+        return ResponseEntity.ok(extracurriculars);
+    }
+
+    @DeleteMapping("{id}")
+    public ResponseEntity<Void> deleteExperience(@PathVariable Long id) {
+        extracurricularService.delete(id);
+        return ResponseEntity.noContent().build(); // HTTP 204 No Content
     }
 }

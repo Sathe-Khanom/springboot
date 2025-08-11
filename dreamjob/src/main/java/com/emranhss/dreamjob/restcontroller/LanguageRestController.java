@@ -13,6 +13,7 @@ import com.emranhss.dreamjob.service.LanguageService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -36,17 +37,20 @@ public class LanguageRestController {
     }
 
     @GetMapping("all")
-    public ResponseEntity<List<LanguageDTO>> getLanguageByJobSeeker(Authentication authentication) {
-        // Get logged-in user email
+    public ResponseEntity<List<LanguageDTO>> getLanguagesByJobSeeker(Authentication authentication) {
         String email = authentication.getName();
 
-        Optional<User> user =userRepo.findByEmail(email);
-        JobSeeker jobSeeker = jobSeekerService.getProfileByUserId(user.get().getId());
+        User user = userRepo.findByEmail(email)
+                .orElseThrow(() -> new UsernameNotFoundException("User not found with email: " + email));
+        JobSeeker jobSeeker = jobSeekerService.getProfileByUserId(user.getId());
 
+        List<LanguageDTO> languages = languageService.getByJobSeekerId(jobSeeker.getId());
 
-        List<LanguageDTO> language = languageService.getByJobSeekerId(jobSeeker.getId());
-
-
-        return ResponseEntity.ok(language);
+        return ResponseEntity.ok(languages);
+    }
+    @DeleteMapping("{id}")
+    public ResponseEntity<Void> deleteLanguage(@PathVariable Long id) {
+        languageService.delete(id);
+        return ResponseEntity.noContent().build();
     }
 }

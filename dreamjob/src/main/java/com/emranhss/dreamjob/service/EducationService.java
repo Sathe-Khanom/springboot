@@ -8,6 +8,7 @@ import com.emranhss.dreamjob.repository.JobSeekerRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.DeleteMapping;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -36,6 +37,7 @@ public class EducationService {
 
         return educationRepository.save(education);
     }
+
 
     public void delete(Long id) {
         educationRepository.deleteById(id);

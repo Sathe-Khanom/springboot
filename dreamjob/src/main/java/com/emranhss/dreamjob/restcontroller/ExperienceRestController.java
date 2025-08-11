@@ -14,6 +14,7 @@ import com.emranhss.dreamjob.service.JobSeekerService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -40,20 +41,26 @@ public class ExperienceRestController {
     }
 
     @GetMapping("all")
-    public ResponseEntity<List<ExperienceDTO>> getExperienceByJobSeeker(Authentication authentication) {
+    public ResponseEntity<List<ExperienceDTO>> getEducationsByJobSeeker(Authentication authentication) {
         // Get logged-in user email
         String email = authentication.getName();
 
-        Optional<User> user =userRepo.findByEmail(email);
-        JobSeeker jobSeeker = jobSeekerService.getProfileByUserId(user.get().getId());
+        User user = userRepo.findByEmail(email)
+                .orElseThrow(() -> new UsernameNotFoundException("User not found with email: " + email));
+        JobSeeker jobSeeker = jobSeekerService.getProfileByUserId(user.getId());
 
 
-        List<ExperienceDTO> experiences = experienceService.getByJobSeekerId(jobSeeker.getId());
+        List<ExperienceDTO> educations = experienceService.getByJobSeekerId(jobSeeker.getId());
 
 
-        return ResponseEntity.ok(experiences);
+        return ResponseEntity.ok(educations);
     }
 
+    @DeleteMapping("{id}")
+    public ResponseEntity<Void> deleteExperience(@PathVariable Long id) {
+        experienceService.delete(id);
+        return ResponseEntity.noContent().build(); // HTTP 204 No Content
+    }
 
 
 

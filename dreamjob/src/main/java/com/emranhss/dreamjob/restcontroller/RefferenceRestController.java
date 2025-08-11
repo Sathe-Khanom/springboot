@@ -13,6 +13,7 @@ import com.emranhss.dreamjob.service.ReferenceService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -36,17 +37,20 @@ public class RefferenceRestController {
     }
 
     @GetMapping("all")
-    public ResponseEntity<List<RefferenceDTO>> getRefferenceByJobSeeker(Authentication authentication) {
-        // Get logged-in user email
+    public ResponseEntity<List<RefferenceDTO>> getReferencesByJobSeeker(Authentication authentication) {
         String email = authentication.getName();
 
-        Optional<User> user =userRepo.findByEmail(email);
-        JobSeeker jobSeeker = jobSeekerService.getProfileByUserId(user.get().getId());
+        User user = userRepo.findByEmail(email)
+                .orElseThrow(() -> new UsernameNotFoundException("User not found with email: " + email));
+        JobSeeker jobSeeker = jobSeekerService.getProfileByUserId(user.getId());
 
+        List<RefferenceDTO> references = referenceService.getByJobSeekerId(jobSeeker.getId());
 
-        List<RefferenceDTO> refference = referenceService.getByJobSeekerId(jobSeeker.getId());
-
-
-        return ResponseEntity.ok(refference);
+        return ResponseEntity.ok(references);
+    }
+    @DeleteMapping("{id}")
+    public ResponseEntity<Void> deleteReference(@PathVariable Long id) {
+        referenceService.delete(id);
+        return ResponseEntity.noContent().build();
     }
 }

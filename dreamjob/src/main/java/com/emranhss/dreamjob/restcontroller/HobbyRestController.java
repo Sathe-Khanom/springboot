@@ -12,6 +12,7 @@ import com.emranhss.dreamjob.service.JobSeekerService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -36,22 +37,21 @@ public class HobbyRestController {
     }
 
     @GetMapping("all")
-    public ResponseEntity<List<HobbyDTO>> getHobbyByJobSeeker(Authentication authentication) {
-        // Get logged-in user email
+    public ResponseEntity<List<HobbyDTO>> getHobbiesByJobSeeker(Authentication authentication) {
         String email = authentication.getName();
 
-        Optional<User> user =userRepo.findByEmail(email);
-        JobSeeker jobSeeker = jobSeekerService.getProfileByUserId(user.get().getId());
+        User user = userRepo.findByEmail(email)
+                .orElseThrow(() -> new UsernameNotFoundException("User not found with email: " + email));
+        JobSeeker jobSeeker = jobSeekerService.getProfileByUserId(user.getId());
 
+        List<HobbyDTO> hobbies = hobbyService.getByJobSeekerId(jobSeeker.getId());
 
-        List<HobbyDTO> hobby = hobbyService.getByJobSeekerId(jobSeeker.getId());
+        return ResponseEntity.ok(hobbies);}
 
-
-        return ResponseEntity.ok(hobby);
+    @DeleteMapping("{id}")
+    public ResponseEntity<Void> deleteHobby(@PathVariable Long id) {
+        hobbyService.delete(id);
+        return ResponseEntity.noContent().build(); // HTTP 204 No Content
     }
-
-
-
-
 
 }

@@ -13,6 +13,7 @@ import com.emranhss.dreamjob.service.TrainingService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -35,18 +36,22 @@ public class TrainingRestController {
         return ResponseEntity.ok(savedTraining);
     }
 
+
     @GetMapping("all")
-    public ResponseEntity<List<TrainingDTO>> getTrainingByJobSeeker(Authentication authentication) {
-        // Get logged-in user email
+    public ResponseEntity<List<TrainingDTO>> getTrainingsByJobSeeker(Authentication authentication) {
         String email = authentication.getName();
 
-        Optional<User> user =userRepo.findByEmail(email);
-        JobSeeker jobSeeker = jobSeekerService.getProfileByUserId(user.get().getId());
+        User user = userRepo.findByEmail(email)
+                .orElseThrow(() -> new UsernameNotFoundException("Username not found"));
+        JobSeeker jobSeeker = jobSeekerService.getProfileByUserId(user.getId());
 
+        List<TrainingDTO> trainings = trainingService.getByJobSeekerId(jobSeeker.getId());
 
-        List<TrainingDTO> training = trainingService.getByJobSeekerId(jobSeeker.getId());
-
-
-        return ResponseEntity.ok(training);
+        return ResponseEntity.ok(trainings);
+    }
+    @DeleteMapping("{id}")
+    public ResponseEntity<Void> deleteTraining(@PathVariable Long id) {
+        trainingService.delete(id);
+        return ResponseEntity.noContent().build(); // HTTP 204 No Content
     }
 }

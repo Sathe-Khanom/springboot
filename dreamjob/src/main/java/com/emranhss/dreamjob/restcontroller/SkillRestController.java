@@ -13,6 +13,7 @@ import com.emranhss.dreamjob.service.SkillService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -36,17 +37,21 @@ public class SkillRestController {
     }
 
     @GetMapping("all")
-    public ResponseEntity<List<SkillDTO>> getSkillByJobSeeker(Authentication authentication) {
-        // Get logged-in user email
+    public ResponseEntity<List<SkillDTO>> getSkillsByJobSeeker(Authentication authentication) {
         String email = authentication.getName();
 
-        Optional<User> user =userRepo.findByEmail(email);
-        JobSeeker jobSeeker = jobSeekerService.getProfileByUserId(user.get().getId());
+        User user = userRepo.findByEmail(email)
+                .orElseThrow(() -> new UsernameNotFoundException("User not found with email: " + email));
+        JobSeeker jobSeeker = jobSeekerService.getProfileByUserId(user.getId());
 
+        List<SkillDTO> skills = skillService.getByJobSeekerId(jobSeeker.getId());
 
-        List<SkillDTO> skill = skillService.getByJobSeekerId(jobSeeker.getId());
+        return ResponseEntity.ok(skills);
+    }
 
-
-        return ResponseEntity.ok(skill);
+    @DeleteMapping("{id}")
+    public ResponseEntity<Void> deleteSkill(@PathVariable Long id) {
+        skillService.delete(id);
+        return ResponseEntity.noContent().build();
     }
 }
