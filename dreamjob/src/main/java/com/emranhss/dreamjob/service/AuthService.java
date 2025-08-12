@@ -1,10 +1,7 @@
 package com.emranhss.dreamjob.service;
 
 import com.emranhss.dreamjob.dto.AuthenticationResponse;
-import com.emranhss.dreamjob.entity.JobSeeker;
-import com.emranhss.dreamjob.entity.Role;
-import com.emranhss.dreamjob.entity.Token;
-import com.emranhss.dreamjob.entity.User;
+import com.emranhss.dreamjob.entity.*;
 import com.emranhss.dreamjob.jwt.JwtService;
 import com.emranhss.dreamjob.repository.ITokenRepository;
 import com.emranhss.dreamjob.repository.IUserRepo;
@@ -43,6 +40,9 @@ public class AuthService {
 
     @Autowired
     private JobSeekerService jobSeekerService;
+
+    @Autowired
+    private EmployerService employerService;
 
     @Autowired
     private JwtService jwtService;
@@ -128,7 +128,7 @@ public class AuthService {
     }
 
 
-    // for User folder
+    // for User folder (for jobSeeker)
     public String saveImage(MultipartFile file, User user) {
 
         Path uploadPath = Paths.get(uploadDir + "/users");
@@ -203,6 +203,57 @@ public class AuthService {
         // Now, associate saved User with JobSeeker and save JobSeeker
         jobSeekerData.setUser(savedUser);
         jobSeekerService.save(jobSeekerData);
+        // jobSeeker close
+
+    }
+
+        //for employer
+
+        public String saveImageForEmployer(MultipartFile file, Employer employer) {
+            Path uploadPath = Paths.get(uploadDir + "/employer");
+            if (!Files.exists(uploadPath)) {
+                try {
+                    Files.createDirectories(uploadPath);
+                } catch (IOException e) {
+                    throw new RuntimeException("Could not create directory: " + uploadPath, e);
+                }
+            }
+
+            String employerName = employer.getCompanyName(); // or getName() if exists
+            String fileName = employerName.trim().replaceAll("\\s+", "_");
+            String savedFileName = fileName + "_" + UUID.randomUUID() + ".png"; // optional extension
+
+            try {
+                Path filePath = uploadPath.resolve(savedFileName);
+                Files.copy(file.getInputStream(), filePath);
+            } catch (IOException e) {
+                throw new RuntimeException("Could not save file: " + savedFileName, e);
+            }
+            return savedFileName;
+        }
+
+
+        public void registerEmployer(User user, MultipartFile imageFile, Employer employerData) {
+            if (imageFile != null && !imageFile.isEmpty()) {
+                String filename = saveImage(imageFile, user); // Save for User
+                String employerLogo = saveImageForEmployer(imageFile, employerData); // Save for Employer
+
+                user.setPhoto(filename);
+                employerData.setLogo(employerLogo);
+            }
+
+            // Encode password
+            user.setPassword(passwordEncoder.encode(user.getPassword()));
+            user.setRole(Role.EMPLOYER); // ✅ Correct role for Employer
+            user.setActive(false);
+
+            // Save User first
+            User savedUser = userRepo.save(user);
+
+            // Associate Employer with User
+            employerData.setUser(savedUser);
+            employerService.save(employerData);
+        //employer close
 
         // Now generate token and save Token associated with savedUser
         String jwt = jwtService.generateToken(savedUser);
