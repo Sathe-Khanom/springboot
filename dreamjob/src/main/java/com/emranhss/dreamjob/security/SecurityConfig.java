@@ -44,7 +44,8 @@ public class SecurityConfig {
                         .requestMatchers("/api/user/all","/api/jobseeker/profile","/api/education/add","/api/education/all",
                                 "/api/experience/add","/api/experience/all","/api/extracurricular/add","/api/extracurricular/all",
                                 "/api/hobby/add","/api/hobby/all","/api/language/add","/api/language/all","/api/refference/add",
-                                "/api/refference/all","/api/skill/add","/api/skill/all","/api/training/add","/api/training/all").hasRole("JOBSEEKER")
+                                "/api/refference/all","/api/skill/add","/api/skill/all","/api/training/add","/api/training/all", "/images/**").hasRole("JOBSEEKER")
+                        .requestMatchers("/api/employer/profile","/images/**").hasRole("EMPLOYER")
                         .anyRequest().authenticated()
                 )
                 .userDetailsService(userService)
