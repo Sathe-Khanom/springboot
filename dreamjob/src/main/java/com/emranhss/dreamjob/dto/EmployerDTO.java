@@ -12,8 +12,8 @@ public class EmployerDTO {
     private String email;
     private String password;
     private String phoneNumber;
-    private String address;
-    private String website;
+    private String companyAddress;
+    private String companyWebsite;
     private String industryType;
     private String logo;
 
@@ -26,8 +26,8 @@ public class EmployerDTO {
         this.email = employer.getEmail();
         this.password = employer.getPassword();
         this.phoneNumber = employer.getPhoneNumber();
-        this.address = employer.getAddress();
-        this.website = employer.getWebsite();
+        this.companyAddress = employer.getCompanyAddress();
+        this.companyWebsite = employer.getCompanyWebsite();
         this.industryType = employer.getIndustryType();
         this.logo = employer.getLogo();
     }
@@ -64,14 +64,6 @@ public class EmployerDTO {
         this.email = email;
     }
 
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
-    }
-
     public String getPhoneNumber() {
         return phoneNumber;
     }
@@ -80,20 +72,28 @@ public class EmployerDTO {
         this.phoneNumber = phoneNumber;
     }
 
-    public String getAddress() {
-        return address;
+    public String getPassword() {
+        return password;
     }
 
-    public void setAddress(String address) {
-        this.address = address;
+    public void setPassword(String password) {
+        this.password = password;
     }
 
-    public String getWebsite() {
-        return website;
+    public String getCompanyAddress() {
+        return companyAddress;
     }
 
-    public void setWebsite(String website) {
-        this.website = website;
+    public void setCompanyAddress(String companyAddress) {
+        this.companyAddress = companyAddress;
+    }
+
+    public String getCompanyWebsite() {
+        return companyWebsite;
+    }
+
+    public void setCompanyWebsite(String companyWebsite) {
+        this.companyWebsite = companyWebsite;
     }
 
     public String getIndustryType() {

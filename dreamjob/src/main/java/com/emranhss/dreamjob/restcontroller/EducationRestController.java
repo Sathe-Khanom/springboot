@@ -18,7 +18,7 @@ import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/education/")
-public class EducationRestController {
+public class   EducationRestController {
 
     @Autowired
     private EducationService educationService;

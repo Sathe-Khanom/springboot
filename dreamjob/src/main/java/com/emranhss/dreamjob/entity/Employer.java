@@ -3,21 +3,40 @@ package com.emranhss.dreamjob.entity;
 
 import jakarta.persistence.*;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Entity
 public class Employer {
 @Id
 @GeneratedValue(strategy = GenerationType.IDENTITY)
 
     private Long id;
+    @Column(nullable = false, length = 150)
     private String companyName;
+
+    @Column(length = 50)
     private String contactPerson;
+
+    @Column(length = 100)
     private String email;
+
     private String password;
+
+    @Column(length = 50)
     private String phoneNumber;
-    private String address;
-    private String website;
+
+    @Column(length = 200)
+    private String companyAddress;
+
+    @Column(length = 200)
+    private String companyWebsite;
+
     private String industryType;
     private String logo;
+
+    @OneToMany(mappedBy = "employer", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Job> jobs = new ArrayList<>();
 
 
     @OneToOne
@@ -28,18 +47,17 @@ public class Employer {
     public Employer() {
     }
 
-    public Employer(Long id, String companyName, String contactPerson, String email, String password, String phoneNumber, String address, String website, String industryType, String logo, User user) {
+    public Employer(Long id, String companyName, String contactPerson, String email, String password, String phoneNumber, String companyAddress, String companyWebsite, String industryType, String logo) {
         this.id = id;
         this.companyName = companyName;
         this.contactPerson = contactPerson;
         this.email = email;
         this.password = password;
         this.phoneNumber = phoneNumber;
-        this.address = address;
-        this.website = website;
+        this.companyAddress = companyAddress;
+        this.companyWebsite = companyWebsite;
         this.industryType = industryType;
         this.logo = logo;
-        this.user = user;
     }
 
     public Long getId() {
@@ -90,20 +108,20 @@ public class Employer {
         this.phoneNumber = phoneNumber;
     }
 
-    public String getAddress() {
-        return address;
+    public String getCompanyAddress() {
+        return companyAddress;
     }
 
-    public void setAddress(String address) {
-        this.address = address;
+    public void setCompanyAddress(String companyAddress) {
+        this.companyAddress = companyAddress;
     }
 
-    public String getWebsite() {
-        return website;
+    public String getCompanyWebsite() {
+        return companyWebsite;
     }
 
-    public void setWebsite(String website) {
-        this.website = website;
+    public void setCompanyWebsite(String companyWebsite) {
+        this.companyWebsite = companyWebsite;
     }
 
     public String getIndustryType() {
@@ -120,6 +138,14 @@ public class Employer {
 
     public void setLogo(String logo) {
         this.logo = logo;
+    }
+
+    public List<Job> getJobs() {
+        return jobs;
+    }
+
+    public void setJobs(List<Job> jobs) {
+        this.jobs = jobs;
     }
 
     public User getUser() {

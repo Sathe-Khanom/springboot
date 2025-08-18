@@ -1,8 +1,15 @@
 package com.emranhss.dreamjob.service;
 
 import com.emranhss.dreamjob.entity.Employer;
+import com.emranhss.dreamjob.jwt.JwtService;
 import com.emranhss.dreamjob.repository.EmployerRepository;
+import com.emranhss.dreamjob.repository.ITokenRepository;
+import com.emranhss.dreamjob.repository.IUserRepo;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Lazy;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -13,6 +20,30 @@ public class EmployerService {
 
     @Autowired
     private EmployerRepository  employerRepository;
+
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+
+    @Autowired
+    private IUserRepo userRepo;
+    @Autowired
+    private ITokenRepository tokenRepository;
+
+    @Autowired
+    private EmailService emailService;
+
+    @Autowired
+    private JobSeekerService jobSeekerService;
+
+    @Autowired
+    private JwtService jwtService;
+
+    @Autowired
+    @Lazy
+    private AuthenticationManager authenticationManager;
+
+    @Value("src/main/resources/static/images")
+    private String uploadDir;
 
     public List<Employer> getAll() {
 

@@ -12,7 +12,7 @@ public interface EmployerRepository extends JpaRepository<Employer, Long> {
 
     Optional<Employer> findByUserId(int userId);
 
-    @Query("SELECT js FROM Employer js WHERE js.user.email = :email")
+    @Query("SELECT em FROM Employer em WHERE em.user.email = :email")
     Optional<Employer> findByUserEmail(@Param("email") String email);
 
 
