@@ -25,7 +25,7 @@ public class EmployerDTO {
         this.contactPerson = employer.getContactPerson();
         this.email = employer.getEmail();
         this.password = employer.getPassword();
-        this.phoneNumber = employer.getPhoneNumber();
+        this.phoneNumber = employer.getPhone();
         this.companyAddress = employer.getCompanyAddress();
         this.companyWebsite = employer.getCompanyWebsite();
         this.industryType = employer.getIndustryType();

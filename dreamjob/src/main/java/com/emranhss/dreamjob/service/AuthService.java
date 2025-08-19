@@ -134,7 +134,7 @@ public class AuthService {
         Path uploadPath = Paths.get(uploadDir + "/users");
         if (!Files.exists(uploadPath)) {
             try {
-                Files.createDirectory(uploadPath);
+                Files.createDirectories(uploadPath);
 
             } catch (IOException e) {
                 throw new RuntimeException(e);
@@ -209,50 +209,50 @@ public class AuthService {
 
         //for employer
 
-        public String saveImageForEmployer(MultipartFile file, Employer employer) {
-            Path uploadPath = Paths.get(uploadDir + "/employer");
-            if (!Files.exists(uploadPath)) {
-                try {
-                    Files.createDirectories(uploadPath);
-                } catch (IOException e) {
-                    throw new RuntimeException("Could not create directory: " + uploadPath, e);
-                }
-            }
-
-            String employerName = employer.getCompanyName(); // or getName() if exists
-            String fileName = employerName.trim().replaceAll("\\s+", "_");
-            String savedFileName = fileName + "_" + UUID.randomUUID() + ".png"; // optional extension
-
+    public String saveImageForEmployer(MultipartFile file, Employer employer) {
+        Path uploadPath = Paths.get(uploadDir + "/employer");
+        if (!Files.exists(uploadPath)) {
             try {
-                Path filePath = uploadPath.resolve(savedFileName);
-                Files.copy(file.getInputStream(), filePath);
+                Files.createDirectories(uploadPath);
             } catch (IOException e) {
-                throw new RuntimeException("Could not save file: " + savedFileName, e);
+                throw new RuntimeException("Could not create directory: " + uploadPath, e);
             }
-            return savedFileName;
         }
 
+        String employerName = employer.getCompanyName(); // or getName() if exists
+        String fileName = employerName.trim().replaceAll("\\s+", "_");
+        String savedFileName = fileName + "_" + UUID.randomUUID() + ".png"; // optional extension
 
-        public void registerEmployer(User user, MultipartFile imageFile, Employer employerData) {
-            if (imageFile != null && !imageFile.isEmpty()) {
-                String filename = saveImage(imageFile, user); // Save for User
-                String employerLogo = saveImageForEmployer(imageFile, employerData); // Save for Employer
+        try {
+            Path filePath = uploadPath.resolve(savedFileName);
+            Files.copy(file.getInputStream(), filePath);
+        } catch (IOException e) {
+            throw new RuntimeException("Could not save file: " + savedFileName, e);
+        }
+        return savedFileName;
+    }
 
-                user.setPhoto(filename);
-                employerData.setLogo(employerLogo);
-            }
 
-            // Encode password
-            user.setPassword(passwordEncoder.encode(user.getPassword()));
-            user.setRole(Role.EMPLOYER); // ✅ Correct role for Employer
-            user.setActive(false);
+    public void registerEmployer(User user, MultipartFile imageFile, Employer employerData) {
+        if (imageFile != null && !imageFile.isEmpty()) {
+            String filename = saveImage(imageFile, user); // Save for User
+            String employerLogo = saveImageForEmployer(imageFile, employerData); // Save for Employer
 
-            // Save User first
-            User savedUser = userRepo.save(user);
+            user.setPhoto(filename);
+            employerData.setLogo(employerLogo);
+        }
 
-            // Associate Employer with User
-            employerData.setUser(savedUser);
-            employerService.save(employerData);
+        // Encode password
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
+        user.setRole(Role.EMPLOYER); // ✅ Correct role for Employer
+        user.setActive(false);
+
+        // Save User first
+        User savedUser = userRepo.save(user);
+
+        // Associate Employer with User
+        employerData.setUser(savedUser);
+        employerService.save(employerData);
         //employer close
 
         // Now generate token and save Token associated with savedUser

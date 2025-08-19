@@ -24,7 +24,7 @@ public class Employer {
     private String password;
 
     @Column(length = 50)
-    private String phoneNumber;
+    private String phone;
 
     @Column(length = 200)
     private String companyAddress;
@@ -47,17 +47,20 @@ public class Employer {
     public Employer() {
     }
 
-    public Employer(Long id, String companyName, String contactPerson, String email, String password, String phoneNumber, String companyAddress, String companyWebsite, String industryType, String logo) {
+
+    public Employer(Long id, String companyName, String contactPerson, String email, String password, String phone, String companyAddress, String companyWebsite, String industryType, String logo, List<Job> jobs, User user) {
         this.id = id;
         this.companyName = companyName;
         this.contactPerson = contactPerson;
         this.email = email;
         this.password = password;
-        this.phoneNumber = phoneNumber;
+        this.phone = phone;
         this.companyAddress = companyAddress;
         this.companyWebsite = companyWebsite;
         this.industryType = industryType;
         this.logo = logo;
+        this.jobs = jobs;
+        this.user = user;
     }
 
     public Long getId() {
@@ -100,12 +103,12 @@ public class Employer {
         this.password = password;
     }
 
-    public String getPhoneNumber() {
-        return phoneNumber;
+    public String getPhone() {
+        return phone;
     }
 
-    public void setPhoneNumber(String phoneNumber) {
-        this.phoneNumber = phoneNumber;
+    public void setPhone(String phone) {
+        this.phone = phone;
     }
 
     public String getCompanyAddress() {
