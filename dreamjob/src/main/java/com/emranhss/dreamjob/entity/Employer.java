@@ -1,6 +1,7 @@
 package com.emranhss.dreamjob.entity;
 
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 
 import java.util.ArrayList;
@@ -36,6 +37,7 @@ public class Employer {
     private String logo;
 
     @OneToMany(mappedBy = "employer", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonIgnore
     private List<Job> jobs = new ArrayList<>();
 
 

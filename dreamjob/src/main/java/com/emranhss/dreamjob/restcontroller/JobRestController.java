@@ -47,4 +47,30 @@ public class JobRestController {
     }
 
 
+    // GET all jobs
+    @GetMapping
+    public ResponseEntity<List<JobDTO>> getAllJobs() {
+        List<JobDTO> jobs = jobService.getJobs();
+        if (jobs.isEmpty()) {
+            return ResponseEntity.noContent().build(); // 204 No Content if empty
+        }
+        return ResponseEntity.ok(jobs); // 200 OK with jobs list
+    }
+
+
+    @GetMapping("/{id}")
+    public ResponseEntity<JobDTO> getJobById(@PathVariable Long id) {
+        JobDTO job = jobService.getJobById(id);
+        if (job == null) {
+            return ResponseEntity.notFound().build(); // 404 if not found
+        }
+        return ResponseEntity.ok(job); // 200 with job data
+    }
+
+
+
+
+
+
+
 }

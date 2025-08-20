@@ -195,7 +195,7 @@ public class AuthService {
         // Encode password before saving User
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         user.setRole(Role.JOBSEEKER);
-        user.setActive(false);
+        user.setActive(true);
 
         // Save User FIRST and get persisted instance
         User savedUser = userRepo.save(user);
@@ -245,7 +245,7 @@ public class AuthService {
         // Encode password
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         user.setRole(Role.EMPLOYER); // ✅ Correct role for Employer
-        user.setActive(false);
+        user.setActive(true);
 
         // Save User first
         User savedUser = userRepo.save(user);
