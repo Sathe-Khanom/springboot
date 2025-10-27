@@ -1,0 +1,63 @@
+package com.emranhss.dreamjob.restcontroller;
+
+import com.emranhss.dreamjob.dto.SkillDTO;
+import com.emranhss.dreamjob.dto.TrainingDTO;
+import com.emranhss.dreamjob.entity.*;
+import com.emranhss.dreamjob.repository.IUserRepo;
+import com.emranhss.dreamjob.service.JobSeekerService;
+import com.emranhss.dreamjob.service.SkillService;
+import com.emranhss.dreamjob.service.TrainingService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+import java.util.Optional;
+@RestController
+@RequestMapping("/api/training/")
+public class TrainingRestController {
+
+    @Autowired
+    private TrainingService trainingService;
+    @Autowired
+    private JobSeekerService jobSeekerService;
+    @Autowired
+    private IUserRepo userRepo;
+
+    @PostMapping("add")
+    public ResponseEntity<Training> addTraining(@RequestBody Training training, Authentication authentication) {
+        String email = authentication.getName();  // Logged-in user's email
+        Training savedTraining = trainingService.saveTraining(training, email);
+        return ResponseEntity.ok(savedTraining);
+    }
+
+
+    @GetMapping("all")
+    public ResponseEntity<List<TrainingDTO>> getTrainingsByJobSeeker(Authentication authentication) {
+        String email = authentication.getName();
+
+        User user = userRepo.findByEmail(email)
+                .orElseThrow(() -> new UsernameNotFoundException("Username not found"));
+        JobSeeker jobSeeker = jobSeekerService.getProfileByUserId(user.getId());
+
+        List<TrainingDTO> trainings = trainingService.getByJobSeekerId(jobSeeker.getId());
+
+        return ResponseEntity.ok(trainings);
+    }
+    @PutMapping("update/{id}")
+    public ResponseEntity<Training> updateTraining(@PathVariable Long id,
+                                                     @RequestBody Training updatedTraining,
+                                                     Authentication authentication) {
+        String email = authentication.getName();
+        Training updated = trainingService.updateTraining(id, updatedTraining, email);
+        return ResponseEntity.ok(updated);
+    }
+
+    @DeleteMapping("{id}")
+    public ResponseEntity<Void> deleteTraining(@PathVariable Long id) {
+        trainingService.delete(id);
+        return ResponseEntity.noContent().build(); // HTTP 204 No Content
+    }
+}
